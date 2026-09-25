@@ -5,9 +5,12 @@ import 'package:flame/game.dart';
 import 'components/background.dart';
 import 'components/obstacle.dart';
 import 'components/player.dart';
+import 'components/score_text.dart';
 import 'game_config.dart';
 
 class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
+  static const int _pointsPerSecond = 10;
+
   RunnerGame()
       : super(
           camera: CameraComponent.withFixedResolution(
@@ -17,6 +20,9 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
         );
 
   late final Player _player;
+  double _survivalTime = 0;
+
+  int get score => (_survivalTime * _pointsPerSecond).floor();
 
   @override
   void onLoad() {
@@ -34,6 +40,14 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
         selfPositioning: true,
       ),
     ]);
+
+    camera.viewport.add(ScoreText());
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    _survivalTime += dt;
   }
 
   @override

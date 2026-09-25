@@ -3,6 +3,7 @@ import 'package:flame/game.dart';
 
 import 'components/background.dart';
 import 'game_config.dart';
+import 'components/player.dart';
 
 class RunnerGame extends FlameGame {
   RunnerGame()
@@ -18,6 +19,6 @@ class RunnerGame extends FlameGame {
     // World'ün (0,0) noktası ekranın sol üst köşesi olsun.
     camera.viewfinder.anchor = Anchor.topLeft;
 
-    world.add(Background());
+       world.addAll([Background(), Player()]);
   }
 }

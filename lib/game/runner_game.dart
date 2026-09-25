@@ -1,11 +1,12 @@
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 
 import 'components/background.dart';
-import 'game_config.dart';
 import 'components/player.dart';
+import 'game_config.dart';
 
-class RunnerGame extends FlameGame {
+class RunnerGame extends FlameGame with TapCallbacks {
   RunnerGame()
       : super(
           camera: CameraComponent.withFixedResolution(
@@ -14,11 +15,19 @@ class RunnerGame extends FlameGame {
           ),
         );
 
+  late final Player _player;
+
   @override
   void onLoad() {
-    // World'ün (0,0) noktası ekranın sol üst köşesi olsun.
+    // World'ün (0,0) noktası ekranın sol üst köşesi olarak belirledim.
     camera.viewfinder.anchor = Anchor.topLeft;
 
-       world.addAll([Background(), Player()]);
+    _player = Player();
+    world.addAll([Background(), _player]);
+  }
+
+  @override
+  void onTapDown(TapDownEvent event) {
+    _player.jump();
   }
 }

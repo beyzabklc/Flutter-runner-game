@@ -1,10 +1,14 @@
 import 'dart:ui';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
 import '../game_config.dart';
+import '../runner_game.dart';
+import 'obstacle.dart';
 
-class Player extends RectangleComponent {
+class Player extends RectangleComponent
+    with HasGameReference<RunnerGame>, CollisionCallbacks {
   static const double _gravity = 1800;
   static const double _jumpSpeed = -700;
 
@@ -19,6 +23,11 @@ class Player extends RectangleComponent {
         );
 
   bool get isOnGround => position.y >= groundY;
+
+  @override
+  void onLoad() {
+    add(RectangleHitbox());
+  }
 
   void jump() {
     if (isOnGround) {
@@ -36,6 +45,18 @@ class Player extends RectangleComponent {
     if (position.y > groundY) {
       position.y = groundY;
       _verticalSpeed = 0;
+    }
+  }
+
+  @override
+  void onCollisionStart(
+    Set<Vector2> intersectionPoints,
+    PositionComponent other,
+  ) {
+    super.onCollisionStart(intersectionPoints, other);
+
+    if (other is Obstacle) {
+      game.gameOver();
     }
   }
 }

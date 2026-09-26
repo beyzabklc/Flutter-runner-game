@@ -17,13 +17,15 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   static const String gameOverOverlay = 'gameOver';
   static const int _pointsPerSecond = 10;
 
-  RunnerGame()
+  RunnerGame({required this.onGameOver})
       : super(
           camera: CameraComponent.withFixedResolution(
             width: gameWidth,
             height: gameHeight,
           ),
         );
+
+  final void Function(int score) onGameOver;
 
   late final Player _player;
   GameState _state = GameState.mainMenu;
@@ -92,6 +94,7 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
 
     _state = GameState.gameOver;
     pauseEngine();
+    onGameOver(score);
     _showOnly(gameOverOverlay);
   }
 

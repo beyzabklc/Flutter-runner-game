@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:flame_audio/flame_audio.dart';
 
 import 'components/background.dart';
 import 'components/obstacle.dart';
@@ -29,6 +30,8 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   final void Function(int score) onGameOver;
 
   late final Player _player;
+  late final AudioPool _jumpSound;
+  late final AudioPool _hitSound;
   GameState _state = GameState.mainMenu;
   double _survivalTime = 0;
 
@@ -36,8 +39,16 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
 
   @override
   Future<void> onLoad() async {
-    // Tüm görseller oyun başlamadan önce bir kez belleğe alınıyor.
+    // Tüm görseller ve sesler oyun başlamadan önce bir kez belleğe alınıyor.
     await images.loadAll(GameAssets.images);
+    _jumpSound = await FlameAudio.createPool(
+      GameAssets.jumpSound,
+      maxPlayers: 2,
+    );
+    _hitSound = await FlameAudio.createPool(
+      GameAssets.hitSound,
+      maxPlayers: 1,
+    );
 
     // World'ün (0,0) noktası ekranın sol üst köşesi olsun.
     camera.viewfinder.anchor = Anchor.topLeft;
@@ -67,9 +78,16 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
 
   @override
   void onTapDown(TapDownEvent event) {
-    if (_state == GameState.playing) {
-      _player.jump();
+    if (_state == GameState.playing && _player.jump()) {
+      _jumpSound.start();
     }
+  }
+
+  @override
+  void onRemove() {
+    _jumpSound.dispose();
+    _hitSound.dispose();
+    super.onRemove();
   }
 
   void startGame() {
@@ -98,6 +116,7 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
 
     _state = GameState.gameOver;
     pauseEngine();
+    _hitSound.start();
     onGameOver(score);
     _showOnly(gameOverOverlay);
   }

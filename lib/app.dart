@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'game/runner_game.dart';
 import 'ui/overlays/game_over_menu.dart';
 import 'ui/overlays/main_menu.dart';
+import 'ui/overlays/pause_button.dart';
+import 'ui/overlays/pause_menu.dart';
 
 class RunnerApp extends StatelessWidget {
   const RunnerApp({super.key});
@@ -17,6 +19,8 @@ class RunnerApp extends StatelessWidget {
           gameFactory: RunnerGame.new,
           overlayBuilderMap: {
             RunnerGame.mainMenuOverlay: (_, game) => MainMenu(game: game),
+            RunnerGame.pauseButtonOverlay: (_, game) => PauseButton(game: game),
+            RunnerGame.pauseMenuOverlay: (_, game) => PauseMenu(game: game),
             RunnerGame.gameOverOverlay: (_, game) => GameOverMenu(game: game),
           },
         ),

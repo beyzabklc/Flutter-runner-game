@@ -12,6 +12,8 @@ enum GameState { mainMenu, playing, paused, gameOver }
 
 class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   static const String mainMenuOverlay = 'mainMenu';
+  static const String pauseButtonOverlay = 'pauseButton';
+  static const String pauseMenuOverlay = 'pauseMenu';
   static const String gameOverOverlay = 'gameOver';
   static const int _pointsPerSecond = 10;
 
@@ -67,7 +69,21 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   void startGame() {
     _resetRun();
     _state = GameState.playing;
-    overlays.clear();
+    _showOnly(pauseButtonOverlay);
+    resumeEngine();
+  }
+
+  void pauseGame() {
+    if (_state != GameState.playing) return;
+
+    _state = GameState.paused;
+    pauseEngine();
+    _showOnly(pauseMenuOverlay);
+  }
+
+  void resumeGame() {
+    _state = GameState.playing;
+    _showOnly(pauseButtonOverlay);
     resumeEngine();
   }
 

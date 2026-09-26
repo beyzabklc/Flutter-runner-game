@@ -34,6 +34,10 @@ class Player extends RectangleComponent
       _verticalSpeed = _jumpSpeed;
     }
   }
+    void reset() {
+    position.y = groundY;
+    _verticalSpeed = 0;
+  }
 
   @override
   void update(double dt) {

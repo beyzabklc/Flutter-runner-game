@@ -8,7 +8,11 @@ import 'components/player.dart';
 import 'components/score_text.dart';
 import 'game_config.dart';
 
+enum GameState { mainMenu, playing, paused, gameOver }
+
 class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
+  static const String mainMenuOverlay = 'mainMenu';
+  static const String gameOverOverlay = 'gameOver';
   static const int _pointsPerSecond = 10;
 
   RunnerGame()
@@ -20,6 +24,7 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
         );
 
   late final Player _player;
+  GameState _state = GameState.mainMenu;
   double _survivalTime = 0;
 
   int get score => (_survivalTime * _pointsPerSecond).floor();
@@ -42,6 +47,8 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     ]);
 
     camera.viewport.add(ScoreText());
+
+    goToMainMenu();
   }
 
   @override
@@ -52,10 +59,40 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
 
   @override
   void onTapDown(TapDownEvent event) {
-    _player.jump();
+    if (_state == GameState.playing) {
+      _player.jump();
+    }
+  }
+
+  void startGame() {
+    _resetRun();
+    _state = GameState.playing;
+    overlays.clear();
+    resumeEngine();
   }
 
   void gameOver() {
+    if (_state != GameState.playing) return;
+
+    _state = GameState.gameOver;
     pauseEngine();
+    _showOnly(gameOverOverlay);
+  }
+
+  void goToMainMenu() {
+    _state = GameState.mainMenu;
+    pauseEngine();
+    _showOnly(mainMenuOverlay);
+  }
+
+  void _resetRun() {
+    _survivalTime = 0;
+    _player.reset();
+    world.removeAll(world.children.whereType<Obstacle>());
+  }
+
+  void _showOnly(String overlay) {
+    overlays.clear();
+    overlays.add(overlay);
   }
 }

@@ -1,32 +1,45 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
+import '../game_assets.dart';
 import '../game_config.dart';
+import '../runner_game.dart';
 
-class Obstacle extends RectangleComponent {
-  static const double _speed = 300;
-  static final Paint _paint = Paint()..color = const Color(0xFFD62828);
+enum ObstacleType {
+  smallRock(GameAssets.smallRock, 40, 36),
+  bigRock(GameAssets.bigRock, 52, 56),
+  crystal(GameAssets.crystal, 32, 64);
+
+  const ObstacleType(this.imageName, this.width, this.height);
+
+  final String imageName;
+  final double width;
+  final double height;
+}
+
+class Obstacle extends SpriteComponent with HasGameReference<RunnerGame> {
   static final Random _random = Random();
 
-  Obstacle({required Vector2 size})
+  final ObstacleType type;
+
+  Obstacle(this.type)
       : super(
-          size: size,
+          size: Vector2(type.width, type.height),
           position: Vector2(gameWidth, groundY),
           anchor: Anchor.bottomLeft,
-          paint: _paint,
         );
 
   factory Obstacle.random() {
-    final width = 30 + _random.nextDouble() * 20;
-    final height = 40 + _random.nextDouble() * 30;
-    return Obstacle(size: Vector2(width, height));
+    const types = ObstacleType.values;
+    return Obstacle(types[_random.nextInt(types.length)]);
   }
 
   @override
   void onLoad() {
+    sprite = Sprite(game.images.fromCache(type.imageName));
+
     // Engeller birbirleriyle kontrol edilmesin, sadece player ile.
     add(RectangleHitbox(collisionType: CollisionType.passive));
   }
@@ -34,7 +47,7 @@ class Obstacle extends RectangleComponent {
   @override
   void update(double dt) {
     super.update(dt);
-    position.x -= _speed * dt;
+    position.x -= worldSpeed * dt;
 
     if (position.x + size.x < 0) {
       removeFromParent();

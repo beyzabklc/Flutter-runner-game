@@ -6,6 +6,7 @@ import 'components/background.dart';
 import 'components/obstacle.dart';
 import 'components/player.dart';
 import 'components/score_text.dart';
+import 'game_assets.dart';
 import 'game_config.dart';
 
 enum GameState { mainMenu, playing, paused, gameOver }
@@ -34,7 +35,10 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   int get score => (_survivalTime * _pointsPerSecond).floor();
 
   @override
-  void onLoad() {
+  Future<void> onLoad() async {
+    // Tüm görseller oyun başlamadan önce bir kez belleğe alınıyor.
+    await images.loadAll(GameAssets.images);
+
     // World'ün (0,0) noktası ekranın sol üst köşesi olsun.
     camera.viewfinder.anchor = Anchor.topLeft;
 

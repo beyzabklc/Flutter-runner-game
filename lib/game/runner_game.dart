@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
@@ -39,6 +40,7 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
 
   @override
   Future<void> onLoad() async {
+        pauseWhenBackgrounded = false;
     // Tüm görseller ve sesler oyun başlamadan önce bir kez belleğe alınıyor.
     await images.loadAll(GameAssets.images);
     _jumpSound = await FlameAudio.createPool(
@@ -83,6 +85,14 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     }
   }
 
+  @override
+  void lifecycleStateChange(AppLifecycleState state) {
+    super.lifecycleStateChange(state);
+
+    if (state != AppLifecycleState.resumed) {
+      pauseGame();
+    }
+  }
   @override
   void onRemove() {
     _jumpSound.dispose();

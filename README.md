@@ -1,4 +1,4 @@
-# Runner-game
+# Flutter-runner-game
 
 Flutter ve Flame ile geliştirilmiş, Mars'ta geçen sade bir endless runner oyunu. MARSKY Flutter & Flame case çalışması için hazırlanmıştır.
 
